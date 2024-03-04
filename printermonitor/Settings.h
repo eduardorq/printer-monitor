@@ -71,34 +71,34 @@ String PrinterAuthPass = "";      // only used with haproxy or basic auth (only 
 boolean DISPLAYWEATHER = true; // true = show weather when not printing / false = no weather
 String WeatherApiKey = ""; // Your API Key from http://openweathermap.org/
 // Default City Location (use http://openweathermap.org/find to find city ID)
-int CityIDs[] = { 5304391 }; //Only USE ONE for weather marquee
-boolean IS_METRIC = false; // false = Imperial and true = Metric
+int CityIDs[] = { 2515270 }; //Only USE ONE for weather marquee
+boolean IS_METRIC = true; // false = Imperial and true = Metric
 // Languages: ar, bg, ca, cz, de, el, en, fa, fi, fr, gl, hr, hu, it, ja, kr, la, lt, mk, nl, pl, pt, ro, ru, se, sk, sl, es, tr, ua, vi, zh_cn, zh_tw
-String WeatherLanguage = "en";  //Default (en) English
+String WeatherLanguage = "es";  //Default (en) English
 
 // Webserver
 const int WEBSERVER_PORT = 80; // The port you can access this device on over HTTP
 const boolean WEBSERVER_ENABLED = true;  // Device will provide a web interface via http://[ip]:[port]/
 boolean IS_BASIC_AUTH = true;  // true = require athentication to change configuration settings / false = no auth
-char* www_username = "admin";  // User account for the Web Interface
-char* www_password = "password";  // Password for the Web Interface
+char www_username[] = "admin";  // User account for the Web Interface
+char www_password[] = "password";  // Password for the Web Interface
 
 // Date and Time
-float UtcOffset = -7; // Hour offset from GMT for your timezone
-boolean IS_24HOUR = false;     // 23:00 millitary 24 hour clock
-int minutesBetweenDataRefresh = 15;
+float UtcOffset = 0; // Hour offset from GMT for your timezone
+boolean IS_24HOUR = true;     // 23:00 millitary 24 hour clock
+int minutesBetweenDataRefresh = 10;
 boolean DISPLAYCLOCK = true;   // true = Show Clock when not printing / false = turn off display when not printing
 
 // Display Settings
 const int I2C_DISPLAY_ADDRESS = 0x3c; // I2C Address of your Display (usually 0x3c or 0x3d)
 const int SDA_PIN = D2;
 const int SCL_PIN = D5; // original code D5 -- Monitor Easy Board use D1
-boolean INVERT_DISPLAY = false; // true = pins at top | false = pins at the bottom
+boolean INVERT_DISPLAY = true; // true = pins at top | false = pins at the bottom
 //#define DISPLAY_SH1106       // Uncomment this line to use the SH1106 display -- SSD1306 is used by default and is most common
 
 // LED Settings
 const int externalLight = LED_BUILTIN; // LED will always flash on bootup or Wifi Errors
-boolean USE_FLASH = true; // true = System LED will Flash on Service Calls; false = disabled LED flashing
+boolean USE_FLASH = false; // true = System LED will Flash on Service Calls; false = disabled LED flashing
 
 // PSU Control
 boolean HAS_PSU = false; // Set to true if https://github.com/kantlivelong/OctoPrint-PSUControl/ in use
@@ -111,4 +111,4 @@ String OTA_Password = "";      // Set an OTA password here -- leave blank if you
 // End Settings
 //******************************
 
-String themeColor = "light-green"; // this can be changed later in the web interface.
+String themeColor = "light-blue"; // this can be changed later in the web interface.

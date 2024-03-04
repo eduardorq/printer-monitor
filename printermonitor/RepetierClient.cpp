@@ -48,10 +48,10 @@ boolean RepetierClient::validate() {
   boolean rtnValue = false;
   printerData.error = "";
   if (String(myServer) == "") {
-    printerData.error += "Server address is required; ";
+    printerData.error += "La dirección del servidor es obligatoria; ";
   }
   if (myApiKey == "") {
-    printerData.error += "ApiKey is required; ";
+    printerData.error += "La ApiKey es obligatoria; ";
   }
   if (printerData.error == "") {
     rtnValue = true;
@@ -63,7 +63,7 @@ WiFiClient RepetierClient::getSubmitRequest(String apiGetData) {
   WiFiClient printClient;
   printClient.setTimeout(5000);
 
-  Serial.println("Getting Repetier Data via GET");
+  Serial.println("Obteniendo datos del Repetidor via GET");
   Serial.println(apiGetData);
   result = "";
   if (printClient.connect(myServer, myPort)) {  //starts client connection, checks for connection
@@ -85,10 +85,10 @@ WiFiClient RepetierClient::getSubmitRequest(String apiGetData) {
     }
   } 
   else {
-    Serial.println("Connection to Repetier failed: " + String(myServer) + ":" + String(myPort)); //error message if no client connect
+    Serial.println("Conexión a OctoPrint fallida: " + String(myServer) + ":" + String(myPort)); //error message if no client connect
     Serial.println();
     resetPrintData();
-    printerData.error = "Connection to Repetier failed: " + String(myServer) + ":" + String(myPort);
+    printerData.error = "Conexión a OctoPrint fallida: " + String(myServer) + ":" + String(myPort);
     return printClient;
   }
 /*
@@ -132,7 +132,7 @@ void RepetierClient::getPrinterJobResults() {
   JsonArray& root = jsonBuffer.parseArray(printClient);
     
   if (!root.success()) {
-    printerData.error = "Repetier Data Parsing failed: " + String(myServer) + ":" + String(myPort);
+    printerData.error = "Fallo al parsear los datos de OctoPrint: " + String(myServer) + ":" + String(myPort);
     Serial.println(printerData.error);
     printerData.state = "";
     return;
@@ -186,9 +186,9 @@ void RepetierClient::getPrinterJobResults() {
   }
   
   if (isOperational()) {
-    Serial.println("Status: " + printerData.state);
+    Serial.println("Estado: " + printerData.state);
   } else {
-    Serial.println("Printer Not Operational");
+    Serial.println("Impresora no disponible");
   }
 
   //**** get the Printer Temps and Stat

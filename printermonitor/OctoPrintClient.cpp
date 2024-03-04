@@ -47,10 +47,10 @@ boolean OctoPrintClient::validate() {
   boolean rtnValue = false;
   printerData.error = "";
   if (String(myServer) == "") {
-    printerData.error += "Server address is required; ";
+    printerData.error += "La dirección del servidor es obligatoria; ";
   }
   if (myApiKey == "") {
-    printerData.error += "ApiKey is required; ";
+    printerData.error += "La ApiKey es obligatoria; ";
   }
   if (printerData.error == "") {
     rtnValue = true;
@@ -62,7 +62,7 @@ WiFiClient OctoPrintClient::getSubmitRequest(String apiGetData) {
   WiFiClient printClient;
   printClient.setTimeout(5000);
 
-  Serial.println("Getting Octoprint Data via GET");
+  Serial.println("Obteniendo datos de Octoprint via GET");
   Serial.println(apiGetData);
   result = "";
   if (printClient.connect(myServer, myPort)) {  //starts client connection, checks for connection
@@ -76,18 +76,18 @@ WiFiClient OctoPrintClient::getSubmitRequest(String apiGetData) {
     printClient.println("User-Agent: ArduinoWiFi/1.1");
     printClient.println("Connection: close");
     if (printClient.println() == 0) {
-      Serial.println("Connection to " + String(myServer) + ":" + String(myPort) + " failed.");
+      Serial.println("Conexión a " + String(myServer) + ":" + String(myPort) + " fallida.");
       Serial.println();
       resetPrintData();
-      printerData.error = "Connection to " + String(myServer) + ":" + String(myPort) + " failed.";
+      printerData.error = "Conexión a " + String(myServer) + ":" + String(myPort) + " fallida.";
       return printClient;
     }
   } 
   else {
-    Serial.println("Connection to OctoPrint failed: " + String(myServer) + ":" + String(myPort)); //error message if no client connect
+    Serial.println("Conexión a OctoPrint fallida: " + String(myServer) + ":" + String(myPort)); //error message if no client connect
     Serial.println();
     resetPrintData();
-    printerData.error = "Connection to OctoPrint failed: " + String(myServer) + ":" + String(myPort);
+    printerData.error = "Conexión a OctoPrint fallida: " + String(myServer) + ":" + String(myPort);
     return printClient;
   }
 
@@ -95,18 +95,18 @@ WiFiClient OctoPrintClient::getSubmitRequest(String apiGetData) {
   char status[32] = {0};
   printClient.readBytesUntil('\r', status, sizeof(status));
   if (strcmp(status, "HTTP/1.1 200 OK") != 0 && strcmp(status, "HTTP/1.1 409 CONFLICT") != 0) {
-    Serial.print(F("Unexpected response: "));
+    Serial.print(F("Respuesta inesperada: "));
     Serial.println(status);
     printerData.state = "";
-    printerData.error = "Response: " + String(status);
+    printerData.error = "Respuesta: " + String(status);
     return printClient;
   }
 
   // Skip HTTP headers
   char endOfHeaders[] = "\r\n\r\n";
   if (!printClient.find(endOfHeaders)) {
-    Serial.println(F("Invalid response"));
-    printerData.error = "Invalid response from " + String(myServer) + ":" + String(myPort);
+    Serial.println(F("Respuesta no válida"));
+    printerData.error = "Respuesta no válida de " + String(myServer) + ":" + String(myPort);
     printerData.state = "";
   }
 
@@ -117,13 +117,13 @@ WiFiClient OctoPrintClient::getPostRequest(String apiPostData, String apiPostBod
   WiFiClient printClient;
   printClient.setTimeout(5000);
 
-  Serial.println("Getting Octoprint Data via POST");
+  Serial.println("Obteniendo datos de Octoprint via POST");
   Serial.println(apiPostData + " | " + apiPostBody);
   result = "";
   if (printClient.connect(myServer, myPort)) {  //starts client connection, checks for connection
     printClient.println(apiPostData);
     printClient.println("Host: " + String(myServer) + ":" + String(myPort));
-    printClient.println("Connection: close");
+    printClient.println("Conexión: close");
     printClient.println("X-Api-Key: " + myApiKey);
     if (encodedAuth != "") {
       printClient.print("Authorization: ");
@@ -136,18 +136,18 @@ WiFiClient OctoPrintClient::getPostRequest(String apiPostData, String apiPostBod
     printClient.println();
     printClient.println(apiPostBody);
     if (printClient.println() == 0) {
-      Serial.println("Connection to " + String(myServer) + ":" + String(myPort) + " failed.");
+      Serial.println("Conexión a " + String(myServer) + ":" + String(myPort) + " fallida.");
       Serial.println();
       resetPrintData();
-      printerData.error = "Connection to " + String(myServer) + ":" + String(myPort) + " failed.";
+      printerData.error = "Conexión a " + String(myServer) + ":" + String(myPort) + " fallida.";
       return printClient;
     }
   } 
   else {
-    Serial.println("Connection to OctoPrint failed: " + String(myServer) + ":" + String(myPort)); //error message if no client connect
+    Serial.println("Conexión a OctoPrint fallida: " + String(myServer) + ":" + String(myPort)); //error message if no client connect
     Serial.println();
     resetPrintData();
-    printerData.error = "Connection to OctoPrint failed: " + String(myServer) + ":" + String(myPort);
+    printerData.error = "Conexión a OctoPrint fallida: " + String(myServer) + ":" + String(myPort);
     return printClient;
   }
 
@@ -155,18 +155,18 @@ WiFiClient OctoPrintClient::getPostRequest(String apiPostData, String apiPostBod
   char status[32] = {0};
   printClient.readBytesUntil('\r', status, sizeof(status));
   if (strcmp(status, "HTTP/1.1 200 OK") != 0 && strcmp(status, "HTTP/1.1 409 CONFLICT") != 0) {
-    Serial.print(F("Unexpected response: "));
+    Serial.print(F("Respuesta inesperada: "));
     Serial.println(status);
     printerData.state = "";
-    printerData.error = "Response: " + String(status);
+    printerData.error = "Respuesta: " + String(status);
     return printClient;
   }
 
   // Skip HTTP headers
   char endOfHeaders[] = "\r\n\r\n";
   if (!printClient.find(endOfHeaders)) {
-    Serial.println(F("Invalid response"));
-    printerData.error = "Invalid response from " + String(myServer) + ":" + String(myPort);
+    Serial.println(F("Respuesta no válida"));
+    printerData.error = "Respuesta no válida de " + String(myServer) + ":" + String(myPort);
     printerData.state = "";
   }
 
@@ -189,8 +189,8 @@ void OctoPrintClient::getPrinterJobResults() {
   // Parse JSON object
   JsonObject& root = jsonBuffer.parseObject(printClient);
   if (!root.success()) {
-    Serial.println("OctoPrint Data Parsing failed: " + String(myServer) + ":" + String(myPort));
-    printerData.error = "OctoPrint Data Parsing failed: " + String(myServer) + ":" + String(myPort);
+    Serial.println("Fallo al parsear los datos de OctoPrint: " + String(myServer) + ":" + String(myPort));
+    printerData.error = "Fallo al parsear los datos de OctoPrint: " + String(myServer) + ":" + String(myPort);
     printerData.state = "";
     return;
   }
@@ -208,9 +208,9 @@ void OctoPrintClient::getPrinterJobResults() {
   printerData.state = (const char*)root["state"];
 
   if (isOperational()) {
-    Serial.println("Status: " + printerData.state);
+    Serial.println("Estado: " + printerData.state);
   } else {
-    Serial.println("Printer Not Operational");
+    Serial.println("Impresora no disponible");
   }
 
   //**** get the Printer Temps and Stat
@@ -245,7 +245,7 @@ void OctoPrintClient::getPrinterJobResults() {
   printerData.bedTargetTemp = (const char*)root2["temperature"]["bed"]["target"];
 
   if (isPrinting()) {
-    Serial.println("Status: " + printerData.state + " " + printerData.fileName + "(" + printerData.progressCompletion + "%)");
+    Serial.println("Estado: " + printerData.state + " " + printerData.fileName + "(" + printerData.progressCompletion + "%)");
   }
 }
 

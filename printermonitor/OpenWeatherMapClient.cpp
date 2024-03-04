@@ -37,7 +37,7 @@ void OpenWeatherMapClient::updateWeatherApiKey(String ApiKey) {
 void OpenWeatherMapClient::updateLanguage(String language) {
   lang = language;
   if (lang == "") {
-    lang = "en";
+    lang = "es";
   }
 }
 
@@ -45,7 +45,7 @@ void OpenWeatherMapClient::updateWeather() {
   WiFiClient weatherClient;
   String apiGetData = "GET /data/2.5/group?id=" + myCityIDs + "&units=" + units + "&cnt=1&APPID=" + myApiKey + "&lang=" + lang + " HTTP/1.1";
 
-  Serial.println("Getting Weather Data");
+  Serial.println("Obteniendo datos de clima");
   Serial.println(apiGetData);
   result = "";
   if (weatherClient.connect(servername, 80)) {  //starts client connection, checks for connection
@@ -56,14 +56,14 @@ void OpenWeatherMapClient::updateWeather() {
     weatherClient.println();
   } 
   else {
-    Serial.println("connection for weather data failed"); //error message if no client connect
+    Serial.println("conexión fallida al obtener datos del clima"); //error message if no client connect
     Serial.println();
     return;
   }
 
   while(weatherClient.connected() && !weatherClient.available()) delay(1); //waits for data
  
-  Serial.println("Waiting for data");
+  Serial.println("Esperando por datos");
 
   // Check HTTP status
   char status[32] = {0};
@@ -78,7 +78,7 @@ void OpenWeatherMapClient::updateWeather() {
     // Skip HTTP headers
   char endOfHeaders[] = "\r\n\r\n";
   if (!weatherClient.find(endOfHeaders)) {
-    Serial.println(F("Invalid response"));
+    Serial.println(F("Respuesta no válida"));
     return;
   }
 
@@ -90,15 +90,15 @@ void OpenWeatherMapClient::updateWeather() {
   // Parse JSON object
   JsonObject& root = jsonBuffer.parseObject(weatherClient);
   if (!root.success()) {
-    Serial.println(F("Weather Data Parsing failed!"));
-    weathers[0].error = "Weather Data Parsing failed!";
+    Serial.println(F("Fallo al parsear los datos del clima!"));
+    weathers[0].error = "Fallo al parsear los datos del clima!";
     return;
   }
 
   weatherClient.stop(); //stop client
 
   if (root.measureLength() <= 150) {
-    Serial.println("Error Does not look like we got the data.  Size: " + String(root.measureLength()));
+    Serial.println("Error No parece que hayamos obtenido los datos.  Tamaño: " + String(root.measureLength()));
     weathers[0].cached = true;
     weathers[0].error = (const char*)root["message"];
     Serial.println("Error: " + weathers[0].error);
