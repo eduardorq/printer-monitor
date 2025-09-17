@@ -1,4 +1,4 @@
-# Printer Monitor (OctoPrint 3D Printer Monitor)
+# Printer Monitor (Moonraker and OctoPrint 3D Printer Monitor)
 
 ## New Easy Monitor Board Kit:
 Now available is the Pre Loaded Monitor Board Kit that comes ready to plug and play on your network.  
@@ -7,7 +7,7 @@ Now available is the Pre Loaded Monitor Board Kit that comes ready to plug and p
 * Configuration video: https://www.youtube.com/watch?v=kcBspqWhpIU
 
 ## Features:
-* Displays the print status from OctoPrint or Repetier Server
+* Displays the print status from Moonraker, OctoPrint or Repetier Server
 * Option to display time and weather when printer is idle
 * Estimated time remaining
 * Time Printing
@@ -84,7 +84,7 @@ Note Printer-Monitor version 2.5 and later include ArduinoJson (version 5.13.1).
 ## Initial Configuration
 All settings may be managed from the Web Interface, however, you may update the **Settings.h** file manually -- but it is not required.  There is also an option to display current weather when the print is off-line.  
 * If you are using the Easy Monitor Board you must set the const int SCL_PIN = D1 in the Settings.h file.
-* By default OctoPrint client is selected.  If you wish to use Repetier then uncomment //#define USE_REPETIER_CLIENT in the Settings.h file.
+* By default OctoPrint client is selected.  If you wish to use Repetier then uncomment //#define USE_REPETIER_CLIENT or Moonraker uncomment //#define USE_MOONRAKER_CLIENT in the Settings.h file.
 * Your OctoPrint API Key from your OctoPrint -> User Settings -> Current API Key  -- similar for Repetier API Key.
 * Optional OpenWeatherMap API Key -- if you want current weather when not printing.  Get the api key from: https://openweathermap.org/  
 
