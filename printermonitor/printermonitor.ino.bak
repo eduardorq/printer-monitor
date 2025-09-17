@@ -24,7 +24,7 @@ SOFTWARE.
 // Additional Contributions:
 /* 15 Jan 2019 : Owen Carter : Add psucontrol option and processing */
 /* 18 Feb 2022 : Robert von Könemann @vknmnn : Lets us select Moonraker + fix usage of AMPM/24Hrs time */
-/* 17 Sep 2025 : Eduardo Romero @eduardorq : Fix Weather API request parse data and Spanish translation */
+/* 17 Sep 2025 : Eduardo Romero @eduardorq : Fix Weather API request data and Spanish translation */
  /**********************************************
  * Edit Settings.h for personalization
  ***********************************************/
@@ -855,11 +855,8 @@ void displayPrinterStatus() {
     } else {
       html += "<div class='w3-cell-row' style='width:100%'><h2>" + weatherClient.getCity(0) + ", " + weatherClient.getCountry(0) + "</h2></div><div class='w3-cell-row'>";
       html += "<div class='w3-cell w3-left w3-medium' style='width:120px'>";
-      html += "<img src='https://openweathermap.org/img/wn/";
-      html += weatherClient.getIcon(0);
-      html += "@2x.png' alt='";
-      html += weatherClient.getDescription(0);
-      html += "'><br>";html += weatherClient.getHumidity(0) + "% Humedad<br>";
+      html += "<img src='http://openweathermap.org/img/w/" + weatherClient.getIcon(0) + ".png' alt='" + weatherClient.getDescription(0) + "'><br>";
+      html += weatherClient.getHumidity(0) + "% Humedad<br>";
       html += weatherClient.getWind(0) + " <span class='w3-tiny'>" + getSpeedSymbol() + "</span> Viento<br>";
       html += "</div>";
       html += "<div class='w3-cell w3-container' style='width:100%'><p>";

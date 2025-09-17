@@ -22,7 +22,6 @@ SOFTWARE.
 */
 
 #include "OpenWeatherMapClient.h"
-#include <WiFiClientSecure.h>
 
 OpenWeatherMapClient::OpenWeatherMapClient(String ApiKey, int CityIDs[], int cityCount, boolean isMetric, String language) {
   updateCityIdList(CityIDs, cityCount);
@@ -32,7 +31,6 @@ OpenWeatherMapClient::OpenWeatherMapClient(String ApiKey, int CityIDs[], int cit
 }
 
 void OpenWeatherMapClient::updateWeatherApiKey(String ApiKey) {
-  ApiKey.trim();
   myApiKey = ApiKey;
 }
 
@@ -44,109 +42,100 @@ void OpenWeatherMapClient::updateLanguage(String language) {
 }
 
 void OpenWeatherMapClient::updateWeather() {
-  WiFiClientSecure weatherClient;
-  weatherClient.setTimeout(15000);
-  weatherClient.setInsecure();          
-  #ifdef ESP8266
-    weatherClient.setBufferSizes(1024, 512); 
-  #endif
+  WiFiClient weatherClient;
+  String apiGetData = "GET /data/2.5/group?id=" + myCityIDs + "&units=" + units + "&cnt=1&APPID=" + myApiKey + "&lang=" + lang + " HTTP/1.1";
 
-  String firstId = myCityIDs;
-  int comma = firstId.indexOf(',');
-  if (comma > 0) firstId.remove(comma);
-
-  myApiKey.trim();
-
-  String path = "/data/2.5/weather?id=" + firstId +
-                "&units=" + units +
-                "&appid=" + myApiKey +
-                "&lang=" + lang;
-
-  Serial.println("\n[OWM] GET " + path);
-
-  if (!weatherClient.connect(servername, 443)) {
-    Serial.println("[OWM] Conexión TLS fallida");
-    weathers[0].cached = true;
-    weathers[0].error  = "TLS connect fail";
+  Serial.println("Obteniendo datos de clima");
+  Serial.println(apiGetData);
+  result = "";
+  if (weatherClient.connect(servername, 80)) {  //starts client connection, checks for connection
+    weatherClient.println(apiGetData);
+    weatherClient.println("Host: " + String(servername));
+    weatherClient.println("User-Agent: ArduinoWiFi/1.1");
+    weatherClient.println("Connection: close");
+    weatherClient.println();
+  } 
+  else {
+    Serial.println("conexión fallida al obtener datos del clima"); //error message if no client connect
+    Serial.println();
     return;
   }
 
-  weatherClient.print(String("GET ") + path + " HTTP/1.1\r\n" +
-                      "Host: " + String(servername) + "\r\n" +
-                      "User-Agent: ESP8266-OWM/1.0\r\n" +
-                      "Connection: close\r\n\r\n");
+  while(weatherClient.connected() && !weatherClient.available()) delay(1); //waits for data
+ 
+  Serial.println("Esperando por datos");
 
-  String statusLine = weatherClient.readStringUntil('\n');
-  statusLine.trim();
-  Serial.println("[OWM] " + statusLine);
-  if (!statusLine.startsWith("HTTP/1.1 ")) {
-    weathers[0].cached = true;
-    weathers[0].error  = "Invalid HTTP";
-    return;
-  }
-  int httpCode = statusLine.substring(9, 12).toInt();
-
-  if (!weatherClient.find("\r\n\r\n")) {
-    Serial.println("[OWM] No end-of-headers");
-    weathers[0].cached = true;
-    weathers[0].error  = "Bad headers";
+  // Check HTTP status
+  char status[32] = {0};
+  weatherClient.readBytesUntil('\r', status, sizeof(status));
+  Serial.println("Response Header: " + String(status));
+  if (strcmp(status, "HTTP/1.1 200 OK") != 0) {
+    Serial.print(F("Unexpected response: "));
+    Serial.println(status);
     return;
   }
 
-  const size_t bufferSize = 4096;
+    // Skip HTTP headers
+  char endOfHeaders[] = "\r\n\r\n";
+  if (!weatherClient.find(endOfHeaders)) {
+    Serial.println(F("Respuesta no válida"));
+    return;
+  }
+
+  const size_t bufferSize = 710;
   DynamicJsonBuffer jsonBuffer(bufferSize);
-  JsonObject& root = jsonBuffer.parseObject(weatherClient);
-  if (!root.success()) {
-    Serial.println("[OWM] JSON parse FAIL");
-    weathers[0].cached = true;
-    weathers[0].error  = "JSON parse fail";
-    return;
-  }
-
-  String cod = root["cod"].is<const char*>() ? (const char*)root["cod"] : String((int)root["cod"]);
-  if (cod != "200") {
-    weathers[0].cached = true;
-    weathers[0].error  = root["message"].is<const char*>() ? (const char*)root["message"] : "cod!=200";
-    Serial.println("[OWM] API error: " + weathers[0].error);
-    return;
-  }
-
-  JsonObject& main  = root["main"];
-  JsonObject& wind  = root["wind"];
-  JsonObject& sys   = root["sys"];
-  JsonArray&  wArr  = root["weather"];
-
-  weathers[0].lat         = String((double)root["coord"]["lat"]);
-  weathers[0].lon         = String((double)root["coord"]["lon"]);
-  weathers[0].dt          = String((long)  root["dt"]);
-  weathers[0].city        = root["name"].is<const char*>() ? (const char*)root["name"] : "";
-  weathers[0].country     = sys["country"].is<const char*>() ? (const char*)sys["country"] : "";
-  weathers[0].temp        = String((double)main["temp"]);
-  weathers[0].humidity    = String((int)   main["humidity"]);
-  weathers[0].wind        = String((double)wind["speed"]);
-
-  if (wArr.size() > 0) {
-    JsonObject& w0 = wArr[0];
-    weathers[0].condition   = w0["main"].is<const char*>() ? (const char*)w0["main"] : "";
-    weathers[0].description = w0["description"].is<const char*>() ? (const char*)w0["description"] : "";
-    weathers[0].weatherId   = String((int)w0["id"]);
-    weathers[0].icon        = w0["icon"].is<const char*>() ? (const char*)w0["icon"] : "";
-  } else {
-    weathers[0].condition = "";
-    weathers[0].description = "";
-    weathers[0].weatherId = "";
-    weathers[0].icon = "";
-  }
 
   weathers[0].cached = false;
-  weathers[0].error  = "";
+  weathers[0].error = "";
+  // Parse JSON object
+  JsonObject& root = jsonBuffer.parseObject(weatherClient);
+  if (!root.success()) {
+    Serial.println(F("Fallo al parsear los datos del clima!"));
+    weathers[0].error = "Fallo al parsear los datos del clima!";
+    return;
+  }
 
-  Serial.println("[OWM] OK city=" + weathers[0].city +
-                 " temp=" + weathers[0].temp +
-                 " icon=" + weathers[0].icon);
+  weatherClient.stop(); //stop client
+
+  if (root.measureLength() <= 150) {
+    Serial.println("Error No parece que hayamos obtenido los datos.  Tamaño: " + String(root.measureLength()));
+    weathers[0].cached = true;
+    weathers[0].error = (const char*)root["message"];
+    Serial.println("Error: " + weathers[0].error);
+    return;
+  }
+  int count = root["cnt"];
+
+  for (int inx = 0; inx < count; inx++) {
+    weathers[inx].lat = (const char*)root["list"][inx]["coord"]["lat"];
+    weathers[inx].lon = (const char*)root["list"][inx]["coord"]["lon"];
+    weathers[inx].dt = (const char*)root["list"][inx]["dt"];
+    weathers[inx].city = (const char*)root["list"][inx]["name"];
+    weathers[inx].country = (const char*)root["list"][inx]["sys"]["country"];
+    weathers[inx].temp = (const char*)root["list"][inx]["main"]["temp"];
+    weathers[inx].humidity = (const char*)root["list"][inx]["main"]["humidity"];
+    weathers[inx].condition = (const char*)root["list"][inx]["weather"][0]["main"];
+    weathers[inx].wind = (const char*)root["list"][inx]["wind"]["speed"];
+    weathers[inx].weatherId = (const char*)root["list"][inx]["weather"][0]["id"];
+    weathers[inx].description = (const char*)root["list"][inx]["weather"][0]["description"];
+    weathers[inx].icon = (const char*)root["list"][inx]["weather"][0]["icon"];
+
+    Serial.println("lat: " + weathers[inx].lat);
+    Serial.println("lon: " + weathers[inx].lon);
+    Serial.println("dt: " + weathers[inx].dt);
+    Serial.println("city: " + weathers[inx].city);
+    Serial.println("country: " + weathers[inx].country);
+    Serial.println("temp: " + weathers[inx].temp);
+    Serial.println("humidity: " + weathers[inx].humidity);
+    Serial.println("condition: " + weathers[inx].condition);
+    Serial.println("wind: " + weathers[inx].wind);
+    Serial.println("weatherId: " + weathers[inx].weatherId);
+    Serial.println("description: " + weathers[inx].description);
+    Serial.println("icon: " + weathers[inx].icon);
+    Serial.println();
+    
+  }
 }
-
-
 
 String OpenWeatherMapClient::roundValue(String value) {
   float f = value.toFloat();
