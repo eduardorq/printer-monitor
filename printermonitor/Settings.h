@@ -115,3 +115,6 @@ String OTA_Password = "";      // Set an OTA password here -- leave blank if you
 //******************************
 
 String themeColor = "light-blue"; // this can be changed later in the web interface.
+
+// Idioma de la interfaz (web + OLED). Valores: en, es, fr, de, it, zh, ja, nl, no, pt, ru, uk, ko
+String UiLanguage = "en";
