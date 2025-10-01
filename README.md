@@ -29,7 +29,8 @@ Now available is the Pre Loaded Monitor Board Kit that comes ready to plug and p
 * Repetier support added in version 3.0 -- define in Settings.h
 * Video: https://youtu.be/niRv9SCgAPk
 * Detailed build video by Chris Riley: https://youtu.be/Rm-l1FSuJpI
-* Add Multi-language
+* Add Multi-language [ 🇩🇪 🇬🇧 🇪🇸 🇫🇷 🇮🇹 🇯🇵 🇰🇷 🇳🇱 🇳🇴 🇵🇹 🇷🇺 🇺🇦 🇨🇳 ]
+  - You need to use the ESP8266 Sketch Data Upload library to automatically upload the data directory with the language files.
 * Add Moonraker compatibility
 
 ## Required Parts:
