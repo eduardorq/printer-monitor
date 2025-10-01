@@ -61,12 +61,12 @@ SOFTWARE.
 //******************************
 
 // OctoPrint / Repetier Monitoring -- Monitor your 3D OctoPrint, Repetier or Moonraker Server
-//#define USE_REPETIER_CLIENT       // Uncomment this line to use the Repetier Printer Server -- OctoPrint is used by default and is most common
+//#define USE_REPETIER_CLIENT     // Uncomment this line to use the Repetier Printer Server -- OctoPrint is used by default and is most common
 #define USE_MOONRAKER_CLIENT      // Uncomment this line to connect to a Moonraker/Klipper Printer Server
-String PrinterApiKey = "";   // ApiKey from your User Account on OctoPrint / Repetier
+String PrinterApiKey = "";        // ApiKey from your User Account on OctoPrint / Repetier
 String PrinterHostName = "octopi";// Default 'octopi' -- or hostname if different (optional if your IP changes)
-String PrinterServer = "";   // IP or Address of your OctoPrint / Repetier Server (DO NOT include http://)
-int PrinterPort = 80;        // the port you are running your OctoPrint / Repetier server on (usually 80);
+String PrinterServer = "";        // IP or Address of your OctoPrint / Repetier Server (DO NOT include http://)
+int PrinterPort = 80;             // the port you are running your OctoPrint / Repetier server on (usually 80);
 String PrinterAuthUser = "";      // only used if you have haproxy or basic athentintication turned on (not default)
 String PrinterAuthPass = "";      // only used with haproxy or basic auth (only needed if you must authenticate)
 
@@ -74,10 +74,10 @@ String PrinterAuthPass = "";      // only used with haproxy or basic auth (only 
 boolean DISPLAYWEATHER = true; // true = show weather when not printing / false = no weather
 String WeatherApiKey = ""; // Your API Key from http://openweathermap.org/
 // Default City Location (use http://openweathermap.org/find to find city ID)
-int CityIDs[] = { 2515270 }; //Only USE ONE for weather marquee
+int CityIDs[] = { }; //Only USE ONE for weather marquee
 boolean IS_METRIC = true; // false = Imperial and true = Metric
 // Languages: ar, bg, ca, cz, de, el, en, fa, fi, fr, gl, hr, hu, it, ja, kr, la, lt, mk, nl, pl, pt, ro, ru, se, sk, sl, es, tr, ua, vi, zh_cn, zh_tw
-String WeatherLanguage = "es";  //Default (en) English
+String WeatherLanguage = "en";  //Default (en) English
 
 // Webserver
 const int WEBSERVER_PORT = 80; // The port you can access this device on over HTTP

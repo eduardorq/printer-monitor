@@ -42,7 +42,6 @@ static inline bool isSpace(char c) {
   return c==' ' || c=='\t' || c=='\r' || c=='\n';
 }
 
-// Devuelve el path /i18n/<lang>.json
 String I18N::pathFor(const String& lang) {
   String l = lang; l.trim();
   if (l.length() == 0) l = "en";
